@@ -15,38 +15,48 @@
  *
  * -----------------------------------------------------------------------------
  *
- * \file     main.cpp
- * \brief    Example main function. In this function, it will call C function and try to execute it.
+ * \file     main.c
+ * \brief    Wrap malloc, free functions. Develop and manage status of allocation.
  * \version  v1.0.0
- * \date     08. April. 2023
+ * \date     23. April. 2023
  *
  * \author   Xiang-Guan Deng
  *
  * -----------------------------------------------------------------------------
  **/
 
-#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-using namespace std;
+extern void *__real_malloc(size_t sz);
+extern void __real_free(void *p);
 
-extern "C" {
-	/* Call C function */
-	int add32(int a, int b);
+void *__wrap_malloc(size_t sz)
+{
+	printf("Wrap malloc\n");
+	// TODO, manage malloc
+	
+	return __real_malloc(sz);
 }
+
+void __wrap_free(void *p)
+{
+	printf("Wrap free\n");
+	// TODO, manage free
+	
+	__real_free(p);
+}
+
 
 int main(int argc, char *argv[])
 {
 	(void)argc;
 	(void)argv;
 
-	string compiler = "None";
-#ifdef __clang__
-	compiler = "CLANG";
-#elif defined(__GNUC__)
-	compiler = "GNU";
-#endif
-	
-	cout << "Hello world " << add32(10, 20) << "," << compiler << endl;
+	int *data = (int *)malloc(100);
+	memset(data, 0xA5, 100);
+	free(data);
 
 	return 0;
 }
